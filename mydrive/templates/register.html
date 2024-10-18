@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+<body>
+    <h2>Register</h2>
+    <form method="post">
+        {% csrf_token %}  <!-- Correct usage of the csrf_token tag -->
+        {{ form.as_p }}   <!-- This will display the form fields -->
+        <button type="submit">Register</button>  <!-- Correct closing button tag -->
+    </form>
+    <a href="{% url 'login' %}">Already have an account? Login here.</a>
+</body>
+</html>

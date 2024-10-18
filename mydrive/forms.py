@@ -1,0 +1,31 @@
+from django import forms
+from django.contrib.auth.models import User  # Import User model
+from django.contrib.auth.forms import AuthenticationForm  # Import built-in authentication form
+
+class UserRegistrationForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    password_confirm = forms.CharField(widget=forms.PasswordInput)
+    phone_number = forms.CharField(max_length=15, required=True, label="Phone Number")
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'email', 'phone_number']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        password_confirm = cleaned_data.get('password_confirm')
+
+        if password and password_confirm and password != password_confirm:
+            raise forms.ValidationError("Passwords do not match")
+
+    def save(self, commit=True):
+        user = super().save(commit=False)  # Create a user instance but don't save yet
+        user.set_password(self.cleaned_data['password'])  # Hash the password
+        if commit:
+            user.save()  # Save the user to the database
+        return user
+
+class UserLoginForm(AuthenticationForm):
+    username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'autofocus': True}))
+    password = forms.CharField(label="Password", widget=forms.PasswordInput)
