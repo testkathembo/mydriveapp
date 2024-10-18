@@ -1,6 +1,7 @@
 from django import forms
-from django.contrib.auth.models import User  # Import User model
+from django.contrib.auth.models import User 
 from django.contrib.auth.forms import AuthenticationForm  # Import built-in authentication form
+from .models import Profile  # Import your custom Profile model
 
 class UserRegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
@@ -29,3 +30,15 @@ class UserRegistrationForm(forms.ModelForm):
 class UserLoginForm(AuthenticationForm):
     username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'autofocus': True}))
     password = forms.CharField(label="Password", widget=forms.PasswordInput)
+    
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['name', 'file']
+        
+class FileUploadForm(forms.ModelForm):
+    class Meta:
+        model = Profile  # Make sure this references your Profile model
+        fields = ['file']  # Only include the file field for upload
+        
+
