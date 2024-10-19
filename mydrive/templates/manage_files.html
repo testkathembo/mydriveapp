@@ -1,0 +1,47 @@
+{% extends "base_nav.html" %}
+{% include 'base.html' %}
+
+{% block title %}Manage Files{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4>Your Uploaded Files</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for file in uploaded_files %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <a href="{{ file.file.url }}" class="link-primary">{{ file.file.name }}</a> - Uploaded on {{ file.uploaded_at|date:"Y-m-d H:i:s" }}
+                                </div>
+                                <div>
+                                    <form action="{% url 'manage_files' %}" method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="file_id" value="{{ file.id }}">
+                                        <button type="submit" name="action" value="delete" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                    <form action="{% url 'manage_files' %}" method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="file_id" value="{{ file.id }}">
+                                        <input type="text" name="new_name" placeholder="New file name" required class="form-control form-control-sm d-inline" style="width: 200px;">
+                                        <button type="submit" name="action" value="rename" class="btn btn-secondary btn-sm">Rename</button>
+                                    </form>
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted">No files uploaded yet.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'home' %}" class="btn btn-link">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -11,6 +11,23 @@ class UserRegistrationForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'username', 'email', 'phone_number']
+        # Customize widgets and hide help text
+        widgets = {
+            'first_name': forms.TextInput(attrs={'placeholder': 'ex: Kathembo'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'ex: Tsongo'}),
+            'username': forms.TextInput(attrs={'placeholder': 'ex: Dieudonne'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'address@gmail.com'}),
+        }
+        
+        # If you want to remove all help_texts from the fields
+        help_texts = {
+            'username': '',
+            'first_name': '',
+            'last_name': '',
+            'email': '',
+            'phone_number': '',
+        }
+
 
     def clean(self):
         cleaned_data = super().clean()

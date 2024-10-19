@@ -3,7 +3,8 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegistrationForm, UserLoginForm, ProfileUpdateForm, FileUploadForm
-from .models import Profile
+from .models import Profile, UploadedFile  # Ensure UploadedFile is imported
+
 
 def register(request):
     """Handles user registration."""
@@ -51,7 +52,7 @@ def logout_view(request):
 @login_required
 def update_profile(request):
     """Handles profile updates for logged-in users."""
-    profile, created = Profile.objects.get_or_create(user=request.user)  # Automatically create a profile if it doesn't exist
+    profile, created = Profile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
         form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
@@ -65,62 +66,63 @@ def update_profile(request):
     return render(request, 'update_profile.html', {'form': form})
 
 @login_required
+def browse_files(request):
+    """Handles browsing uploaded files for logged-in users."""
+    profile = Profile.objects.get(user=request.user)
+    uploaded_files = profile.uploadedfile_set.all()  # Fetch all uploaded files related to the profile
+
+    return render(request, 'browse.html', {'uploaded_files': uploaded_files})
+
+@login_required
+def manage_files(request):
+    """Handles file management for logged-in users."""
+    profile = Profile.objects.get(user=request.user)  # Get the user's profile
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        file_id = request.POST.get('file_id')
+        new_name = request.POST.get('new_name')
+
+        try:
+            uploaded_file = UploadedFile.objects.get(id=file_id, profile=profile)  # Fetch the uploaded file using profile
+
+            if action == 'delete':
+                uploaded_file.delete()  # Deletes the file instance
+                messages.success(request, 'File deleted successfully.')
+            elif action == 'rename':
+                uploaded_file.file.name = new_name  # Update the name
+                uploaded_file.save()  # Save changes
+                messages.success(request, 'File renamed successfully.')
+
+        except UploadedFile.DoesNotExist:
+            messages.error(request, 'File not found.')
+        except Exception as e:
+            messages.error(request, str(e))
+
+    # Fetch all uploaded files for the user's profile
+    uploaded_files = UploadedFile.objects.filter(profile=profile)  # Use profile to filter
+
+    return render(request, 'manage_files.html', {'uploaded_files': uploaded_files})
+
+@login_required
 def upload_file(request):
     """Handles file uploads for logged-in users."""
-    profile, created = Profile.objects.get_or_create(user=request.user)
+    profile = Profile.objects.get(user=request.user)  # Get the user's profile
 
     if request.method == 'POST':
         form = FileUploadForm(request.POST, request.FILES)
         if form.is_valid():
             file = form.cleaned_data['file']
-            # Validate that the upload does not exceed storage limit
-            if profile.storage_used + file.size <= 100 * 1024 * 1024:  # 100MB limit
-                profile.file = file
+            # Check if the upload does not exceed storage limit
+            if profile.storage_used + file.size <= 100 * 1024 * 1024:  # Assuming 100MB limit
+                UploadedFile.objects.create(user=request.user, file=file)  # Save the file
                 profile.storage_used += file.size
                 profile.save()
                 messages.success(request, 'File uploaded successfully!')
-                return redirect('browse')  # Redirect to browse page
+                return redirect('home')  # Redirect after successful upload
             else:
                 messages.error(request, 'Storage limit exceeded.')
     else:
         form = FileUploadForm()
 
     return render(request, 'upload.html', {'form': form})
-
-@login_required
-def browse_files(request):
-    """Handles browsing uploaded files for logged-in users."""
-    profile = Profile.objects.get(user=request.user)
-    uploaded_files = []  # Adjust this logic to handle multiple files as necessary
-
-    if profile.file:
-        uploaded_files.append(profile.file)
-
-    return render(request, 'browse.html', {'uploaded_files': uploaded_files})
-
-@login_required
-def manage_files(request):
-    """Allows users to manage their uploaded files."""
-    uploaded_files = UploadedFile.objects.filter(user=request.user)  # Get files for the logged-in user
-
-    if request.method == 'POST':
-        file_id = request.POST.get('file_id')
-        action = request.POST.get('action')
-
-        # Handle delete action
-        if action == 'delete':
-            file_to_delete = UploadedFile.objects.get(id=file_id, user=request.user)
-            file_to_delete.file.delete()  # Delete the file from the filesystem
-            file_to_delete.delete()  # Remove the record from the database
-            messages.success(request, 'File deleted successfully!')
-
-        # Handle rename action
-        elif action == 'rename':
-            new_name = request.POST.get('new_name')
-            file_to_rename = UploadedFile.objects.get(id=file_id, user=request.user)
-            file_to_rename.file.name = f'uploads/{new_name}'  # Adjust the path if necessary
-            file_to_rename.save()
-            messages.success(request, 'File renamed successfully!')
-
-    return render(request, 'manage_files.html', {'uploaded_files': uploaded_files})
-

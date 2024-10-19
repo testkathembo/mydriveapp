@@ -11,12 +11,10 @@ class Profile(models.Model):
     def __str__(self):
         return self.name
 
-
-
 class UploadedFile(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)  # This should be the reference to the Profile model
     file = models.FileField(upload_to='uploads/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    
+
     def __str__(self):
         return self.file.name
