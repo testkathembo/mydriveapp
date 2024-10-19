@@ -50,11 +50,17 @@ class UserLoginForm(AuthenticationForm):
     
         
 class FileUploadForm(forms.ModelForm):
-    folder = forms.ModelChoiceField(queryset=Folder.objects.all(), required=True)  # Allow user to select a folder
+    folder = forms.ModelChoiceField(queryset=Folder.objects.none(), required=True)  # Initially empty
 
     class Meta:
         model = UploadedFile
-        fields = ['file', 'folder']  # Include folder in the fields
+        fields = ['file', 'folder']
+
+    def __init__(self, user=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if user is not None:
+            self.fields['folder'].queryset = Folder.objects.filter(profile=user.profile)  # Filter folders based on user
+
 
 
 class ProfileUpdateForm(forms.ModelForm):

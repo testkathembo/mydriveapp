@@ -1,38 +1,59 @@
 {% extends "base_nav.html" %}
 {% include "base.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Browse Files</title>
-</head>
-<body>
-    <h2>Your Uploaded Files</h2>
+{% block content  %}
 
-    <h3>Folders</h3>
-    <ul>
+<div class="container">
+    <h2 class="text-center">Welcome, {{ request.user.get_full_name }}!</h2>  
+    <div > 
+    <h3>Your Folders</h3>
+    <div class="row">
         {% for folder in folders %}
-            <li>
-                <a href="{% url 'browse_folders' folder.id %}">{{ folder.name }}</a>
-            </li>
+            
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ folder.name }}</h5>
+                        <a href="{% url 'browse_folder' folder.id %}" class="btn btn-primary">Open Folder</a>
+                    </div>
+                </div>
+            
         {% empty %}
-            <li>No folders available.</li>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">No folders available.</h5>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-    </ul>
+    </div>
 
-    <h3>Files</h3>
-    <ul>
+    <h3>Your Uploaded Files</h3>
+    <div class="row">
         {% for file in uploaded_files %}
-            <li>
-                <a href="{{ file.file.url }}">{{ file.file.name }}</a> - Uploaded on {{ file.uploaded_at }}
-            </li>
+            <div class="col">
+                <div class="card mb-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ file.file.name }}</h5>
+                        <p class="card-text">Uploaded on: {{ file.uploaded_at }}</p>
+                        <a href="{{ file.file.url }}" class="btn btn-secondary">Download File</a>
+                    </div>
+                </div>
+            </div>
         {% empty %}
-            <li>No files uploaded yet.</li>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">No files uploaded yet.</h5>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-    </ul>
+    </div>
 
-    <a href="{% url 'upload' %}">Upload a new file</a>
-</body>
-</html>
+    <div class="text-center">
+        <a href="{% url 'upload' %}" class="btn btn-primary">Upload a new file</a>
+    </div>
+</div>
+</div>
+{% endblock %}

@@ -87,6 +87,7 @@ def upload_file(request):
 
     return render(request, 'upload.html', {'form': form})
 
+
 @login_required
 def browse_files(request):
     """Handles browsing uploaded files for logged-in users."""
@@ -102,6 +103,7 @@ def browse_files(request):
     except Profile.DoesNotExist:
         messages.error(request, 'Profile not found.')
         return redirect('home')
+
 
 @login_required
 def manage_files(request):
