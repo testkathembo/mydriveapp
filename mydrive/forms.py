@@ -48,18 +48,21 @@ class UserLoginForm(AuthenticationForm):
     username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'autofocus': True}))
     password = forms.CharField(label="Password", widget=forms.PasswordInput)
     
-        
 class FileUploadForm(forms.ModelForm):
     folder = forms.ModelChoiceField(queryset=Folder.objects.none(), required=True)  # Initially empty
 
     class Meta:
-        model = UploadedFile
-        fields = ['file', 'folder']
+        model = UploadedFile  # Use the UploadedFile model
+        fields = ['file', 'folder']  # Include folder in the fields
 
-    def __init__(self, user=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Get the user from the kwargs
         super().__init__(*args, **kwargs)
+
         if user is not None:
-            self.fields['folder'].queryset = Folder.objects.filter(profile=user.profile)  # Filter folders based on user
+            # Filter folders for the specific user
+            self.fields['folder'].queryset = Folder.objects.filter(profile=user.profile)
+
 
 
 

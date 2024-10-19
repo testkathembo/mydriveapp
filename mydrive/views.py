@@ -75,7 +75,7 @@ def update_profile(request):
 def upload_file(request):
     """Handles file uploads for logged-in users."""
     if request.method == 'POST':
-        form = FileUploadForm(request.POST, request.FILES)
+        form = FileUploadForm(request.POST, request.FILES, user=request.user)  # Pass user
         if form.is_valid():
             uploaded_file = form.save(commit=False)  # Don't save yet
             uploaded_file.folder = form.cleaned_data['folder']  # Set folder from form
@@ -83,9 +83,10 @@ def upload_file(request):
             messages.success(request, 'File uploaded successfully!')
             return redirect('browse')  # Redirect to browse view after upload
     else:
-        form = FileUploadForm()
+        form = FileUploadForm(user=request.user)  # Pass user
 
     return render(request, 'upload.html', {'form': form})
+
 
 
 @login_required
@@ -148,14 +149,16 @@ def create_folder(request):
 
         parent_folder = None
         if parent_id:
-            parent_folder = Folder.objects.get(id=parent_id)
+            parent_folder = Folder.objects.get(id=parent_id)  # Get the parent folder if provided
 
-        folder = Folder(name=folder_name, profile=request.user.profile, parent=parent_folder)
+        # Use 'parent_folder' instead of 'parent'
+        folder = Folder(name=folder_name, profile=request.user.profile, parent_folder=parent_folder)
         folder.save()
         messages.success(request, 'Folder created successfully!')
         return redirect('browse')  # Redirect to the browse view
 
     return render(request, 'create_folder.html')
+
 
 @login_required
 def browse_folders(request, folder_id):
