@@ -1,32 +1,38 @@
 {% extends "base_nav.html" %}
-{% include 'base.html' %}
+{% include "base.html" %}
 
-{% block title %}Browse Files{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Files</title>
+</head>
+<body>
+    <h2>Your Uploaded Files</h2>
 
-{% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header text-center">
-                    <h4>Your Uploaded Files</h4>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        {% for file in uploaded_files %}
-                            <li class="list-group-item">
-                                <a href="{{ file.url }}" class="link-primary">{{ file.name }}</a> - Uploaded on {{ file.uploaded_at|date:"Y-m-d H:i:s" }}
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item text-muted">No files uploaded yet.</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <div class="card-footer text-center">
-                    <a href="{% url 'home' %}" class="btn btn-link">Back to Home</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
+    <h3>Folders</h3>
+    <ul>
+        {% for folder in folders %}
+            <li>
+                <a href="{% url 'browse_folders' folder.id %}">{{ folder.name }}</a>
+            </li>
+        {% empty %}
+            <li>No folders available.</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Files</h3>
+    <ul>
+        {% for file in uploaded_files %}
+            <li>
+                <a href="{{ file.file.url }}">{{ file.file.name }}</a> - Uploaded on {{ file.uploaded_at }}
+            </li>
+        {% empty %}
+            <li>No files uploaded yet.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'upload' %}">Upload a new file</a>
+</body>
+</html>

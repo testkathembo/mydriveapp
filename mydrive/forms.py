@@ -1,7 +1,8 @@
+# forms.py
 from django import forms
-from django.contrib.auth.models import User 
+from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm  # Import built-in authentication form
-from .models import Profile  # Import your custom Profile model
+from .models import Profile, UploadedFile, Folder  # Import your custom models
 
 class UserRegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
@@ -28,7 +29,6 @@ class UserRegistrationForm(forms.ModelForm):
             'phone_number': '',
         }
 
-
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get('password')
@@ -48,14 +48,16 @@ class UserLoginForm(AuthenticationForm):
     username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'autofocus': True}))
     password = forms.CharField(label="Password", widget=forms.PasswordInput)
     
-class ProfileUpdateForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ['name', 'file']
         
 class FileUploadForm(forms.ModelForm):
-    class Meta:
-        model = Profile  # Make sure this references your Profile model
-        fields = ['file']  # Only include the file field for upload
-        
+    folder = forms.ModelChoiceField(queryset=Folder.objects.all(), required=True)  # Allow user to select a folder
 
+    class Meta:
+        model = UploadedFile
+        fields = ['file', 'folder']  # Include folder in the fields
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile  # Use the Profile model
+        fields = ['name']  # Only include fields from Profile that you want to update

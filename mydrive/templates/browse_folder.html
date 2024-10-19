@@ -1,0 +1,17 @@
+{% extends "base_nav.html" %}
+{% include "base.html" %}
+
+{% block content %}
+<h2>Your Folders</h2>
+<ul>
+    {% for folder in folders %}
+        <li>
+            <a href="{% url 'view_folder' folder.id %}">{{ folder.name }}</a>
+        </li>
+    {% empty %}
+        <li>No folders created yet.</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'create_folder' %}">Create New Folder</a>
+<a href="{% url 'home' %}">Back to Home</a>
+{% endblock %}

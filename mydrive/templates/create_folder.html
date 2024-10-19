@@ -1,0 +1,12 @@
+{% extends "base_nav.html" %}
+
+{% block content %}
+<h2>Create Folder</h2>
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="folder_name" placeholder="Folder Name" required>
+    <button type="submit">Create Folder</button>
+</form>
+<a href="{% url 'browse' %}">Back to Browse</a>
+{% endblock %}
+
