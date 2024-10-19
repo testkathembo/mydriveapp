@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 from .views import (
     register,
     login_view,
@@ -48,7 +50,9 @@ urlpatterns = [
     
     # Share files and folders
     path('share-file/<int:file_id>/', share_file, name='share_file'),  # URL for sharing files
-    path('share-folder/<int:folder_id>/', share_folder, name='share_folder'),  # URL f
-]
+] 
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

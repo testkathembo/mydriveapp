@@ -5,6 +5,9 @@ from django.contrib.auth.decorators import login_required
 from .forms import UserRegistrationForm, UserLoginForm, ProfileUpdateForm, FileUploadForm
 from .models import Profile, UploadedFile, Folder  # Ensure UploadedFile and Folder are imported
 from django.contrib.auth.models import User  # Make sure this is included
+from django.core.mail import send_mail
+from django.conf import settings
+
 
 
 
@@ -253,9 +256,6 @@ def copy_file(request, file_id):
         messages.error(request, 'Target folder not found.')
         return redirect('browse')
 
-
-from django.shortcuts import get_object_or_404
-
 @login_required
 def delete_file(request, file_id):
     """Handles file deletion for logged-in users."""
@@ -280,28 +280,39 @@ def delete_folder(request, folder_id):
 
     return render(request, 'confirm_delete_folder.html', {'folder': folder})
 
+def send_test_email(request, recipient_email, file):
+    subject = 'File Shared with You'
+    # Use the request object to get the absolute URI
+    download_link = request.build_absolute_uri(file.file.url)  # Use request to get the full URL
+    message = f'The file {file.file.name} has been shared with you. You can download it here: {download_link}'
+    from_email = settings.EMAIL_HOST_USER
+
+    try:
+        send_mail(
+            subject,
+            message,
+            from_email,
+            [recipient_email],
+            fail_silently=False,
+        )
+        print(f"Email sent to {recipient_email}")
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+
 
 @login_required
 def share_file(request, file_id):
-    """Share a file with another user via email."""
-    file_to_share = get_object_or_404(UploadedFile, id=file_id)
+    file = get_object_or_404(UploadedFile, id=file_id)
 
-    if request.method == 'POST':
-        recipient_email = request.POST.get('email')  # Get email from form
-        subject = f"Shared File: {file_to_share.file.name}"
-        message = f"You have been shared a file: {file_to_share.file.name}\n\nDownload it here: {file_to_share.file.url}"
+    if request.method == "POST":
+        email = request.POST.get('email')
+        # Call the email sending function with request
+        send_test_email(request, email, file)
 
-        try:
-            # Send the email
-            send_mail(subject, message, settings.EMAIL_HOST_USER, [recipient_email])
-            messages.success(request, f'File shared successfully with {recipient_email}!')
-            return redirect('browse')
-        except Exception as e:
-            messages.error(request, f'Error sharing file: {e}')
-            return redirect('browse')
+        messages.success(request, 'File shared successfully!')
+        return redirect('browse')  # Redirect to a suitable page after sharing
 
-    return render(request, 'share_file.html', {'file': file_to_share})
-
+    return render(request, 'share_file.html', {'file': file})
 
 
 @login_required
