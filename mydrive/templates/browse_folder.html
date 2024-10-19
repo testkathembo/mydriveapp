@@ -2,16 +2,17 @@
 {% include "base.html" %}
 
 {% block content %}
-<h2>These are Your Folders</h2>
+<h3>Files in {{ folder.name }}</h3>
 <ul>
-    {% for folder in folders %}
+    {% for file in files %}
         <li>
-            <a href="{% url 'view_folder' folder.id %}">{{ folder.name }}</a>
+            <a href="{{ file.file.url }}">{{ file.file.name }}</a> - Uploaded on {{ file.uploaded_at }}
         </li>
     {% empty %}
-        <li>No folders created yet.</li>
+        <li>No files found in this folder.</li>
     {% endfor %}
 </ul>
-<a href="{% url 'create_folder' %}">Create New Folder</a>
-<a href="{% url 'home' %}">Back to Home</a>
+
+<a href="{% url 'upload' %}">Upload a new file</a>
+
 {% endblock %}

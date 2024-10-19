@@ -1,0 +1,15 @@
+{% extends "base_nav.html" %}
+{% block content %}
+<div class="container">
+    <h2>Share Folder: {{ folder.name }}</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="email">Enter the email of the user you want to share with:</label>
+            <input type="email" name="email" id="email" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Share Folder</button>
+    </form>
+    <a href="{% url 'browse' %}" class="btn btn-secondary">Cancel</a>
+</div>
+{% endblock %}

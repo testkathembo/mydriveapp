@@ -10,7 +10,14 @@ from .views import (
     manage_files,
     create_folder,
     browse_folders,
-)
+    move_file, 
+    copy_file,
+    delete_file,
+    delete_folder,
+    share_file,
+    share_folder
+    
+    )
 
 urlpatterns = [
     # User authentication URLs
@@ -32,4 +39,16 @@ urlpatterns = [
     # Folder management URLs
     path('folders/<int:folder_id>/', browse_folders, name='browse_folder'),  # View for browsing folders
     path('create-folder/', create_folder, name='create_folder'),  # Added route for folder creation
+    
+    # Management of copies of files and folders
+    path('move-file/<int:file_id>/', move_file, name='move_file'),
+    path('copy-file/<int:file_id>/', copy_file, name='copy_file'),
+    path('delete-file/<int:file_id>/', delete_file, name='delete_file'),
+    path('delete-folder/<int:folder_id>/', delete_folder, name='delete_folder'),  # New delete folder path
+    
+    # Share files and folders
+    path('share-file/<int:file_id>/', share_file, name='share_file'),  # URL for sharing files
+    path('share-folder/<int:folder_id>/', share_folder, name='share_folder'),  # URL f
 ]
+
+

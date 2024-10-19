@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')  # Use related_name for clarity
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     name = models.CharField(max_length=255, default='Unnamed')
     uploaded_at = models.DateTimeField(auto_now=True)
     storage_used = models.PositiveIntegerField(default=0)
@@ -16,21 +16,20 @@ class Profile(models.Model):
         self.save()
 
 class Folder(models.Model):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='folders')  # Link to the user's profile
-    name = models.CharField(max_length=255)  # Name of the folder
-    created_at = models.DateTimeField(auto_now_add=True)  # Time when the folder was created
-    parent_folder = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='subfolders')  # Self-referential for nested folders
-
-    class Meta:
-        unique_together = ('profile', 'name')  # Ensure no duplicate folder names for the same profile
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='folders')
+    name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    parent_folder = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='subfolders')  # Corrected self-reference
+    shared_with = models.ManyToManyField(User, related_name='shared_folders', blank=True)
 
     def __str__(self):
         return self.name
 
 class UploadedFile(models.Model):
-    folder = models.ForeignKey(Folder, on_delete=models.CASCADE, related_name='files', default=None)  # Consider a default folder
+    folder = models.ForeignKey(Folder, on_delete=models.CASCADE, related_name='files')  # Correctly references Folder
     file = models.FileField(upload_to='uploads/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    shared_with = models.ManyToManyField(User, related_name='shared_files', blank=True)
 
     def __str__(self):
         return self.file.name
@@ -40,8 +39,3 @@ class UploadedFile(models.Model):
         super().save(*args, **kwargs)
         # Update the storage used in the associated profile
         self.folder.profile.update_storage(self.file.size)
-
-        
-
-
-
