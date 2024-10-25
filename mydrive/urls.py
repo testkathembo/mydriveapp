@@ -12,6 +12,7 @@ from .views import (
     manage_files,
     create_folder,
     browse_folders,
+    upload_folder,
     move_file, 
     copy_file,
     delete_file,
@@ -31,7 +32,7 @@ urlpatterns = [
     path('home/', home_view, name='home'),
     
     # File management URLs
-    path('upload/', upload_file, name='upload'),
+    path('upload_file/', upload_file, name='upload_file'),
     path('browse/', browse_files, name='browse'),
     path('manage/', manage_files, name='manage_files'),  # View for managing files
 
@@ -41,6 +42,7 @@ urlpatterns = [
     # Folder management URLs
     path('folders/<int:folder_id>/', browse_folders, name='browse_folder'),  # View for browsing folders
     path('create-folder/', create_folder, name='create_folder'),  # Added route for folder creation
+    path('upload-folder/', upload_folder, name='upload_folder'),
     
     # Management of copies of files and folders
     path('move-file/<int:file_id>/', move_file, name='move_file'),

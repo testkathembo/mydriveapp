@@ -2,11 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegistrationForm, UserLoginForm, ProfileUpdateForm, FileUploadForm
+from .forms import UserRegistrationForm, UserLoginForm, ProfileUpdateForm, FileUploadForm, FolderUploadForm  # Include FolderUploadForm here
 from .models import Profile, UploadedFile, Folder  # Ensure UploadedFile and Folder are imported
 from django.contrib.auth.models import User  # Make sure this is included
 from django.core.mail import send_mail
 from django.conf import settings
+from django.core.files import File
+import zipfile
+import os
 
 
 
@@ -91,7 +94,7 @@ def upload_file(request):
     else:
         form = FileUploadForm()
 
-    return render(request, 'upload.html', {'form': form})
+    return render(request, 'upload_file.html', {'form': form})
 
 
 @login_required
@@ -332,3 +335,26 @@ def share_folder(request, folder_id):
         return redirect('browse')  # Redirect to the browse view after sharing
 
     return render(request, 'share_folder.html', {'folder': folder})
+
+
+@login_required
+def upload_folder(request):
+    """Handles folder uploads for logged-in users."""
+    if request.method == 'POST':
+        # Get the files from the uploaded folder
+        uploaded_files = request.FILES.getlist('folder')
+
+        for uploaded_file in uploaded_files:
+            # Here, you can save each file individually
+            file_instance = UploadedFile(
+                file=uploaded_file,
+                folder=Folder.objects.get(profile=request.user.profile, name='Root Folder')  # Or whichever folder you prefer
+            )
+            file_instance.save()
+
+        messages.success(request, 'Folder uploaded successfully!')
+        return redirect('browse')  # Redirect to the browse view after upload
+    else:
+        form = FolderUploadForm()
+
+    return render(request, 'upload_folder.html', {'form': form})

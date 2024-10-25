@@ -70,3 +70,8 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile  # Use the Profile model
         fields = ['name']  # Only include fields from Profile that you want to update
+    
+
+class FolderUploadForm(forms.Form):
+    folder = forms.FileField(label='Select a zipped folder', required=True)
+

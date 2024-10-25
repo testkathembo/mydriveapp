@@ -6,13 +6,12 @@
 <div class="container">
     <h2 class="text-center">Welcome, {{ request.user.get_full_name }}!</h2>  
 
-    <h3 class="mt-4">These are Your Folders</h3>
-    <div class="row">
+       <div class="row">
              {% for folder in folders %}
              <div class="col-md-4 mb-3">
                 <div class="card">
                 <div class="folder">
-                    <h5>{{ folder.name }}</h5>
+                    <h3>{{ folder.name }}</h3>
                     <a href="{% url 'browse_folder' folder.id %}" class="btn btn-primary">Open</a>
                     <a href="{% url 'delete_folder' folder.id %}" class="btn btn-danger">Delete</a>
                 </div>
@@ -24,7 +23,7 @@
     </div>
         
 
-    <h3>Your Uploaded Files</h3>
+    <h5>Your Uploaded Files</h5>
     <div class="row">
         {% for file in uploaded_files %}
             <div class="col-md-6 mb-4">

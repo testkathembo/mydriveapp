@@ -3,25 +3,29 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Create a New Folder</h2>
-    <form method="POST">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="folder_name">Folder Name</label>
-            <input type="text" name="folder_name" id="folder_name" required class="form-control">
+    <div class="card">
+        <div class="card-header">
+            <h2>New Folder</h2>
         </div>
-        <div class="form-group">
-            <label for="parent_id">Parent Folder (optional)</label>
-            <select name="parent_id" id="parent_id" class="form-control">
-                <option value="">None</option>  <!-- Default option -->
-                {% for folder in folders %}
-                    <option value="{{ folder.id }}">{{ folder.name }}</option>
-                {% endfor %}
-            </select>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div>
+                    <input type="text" name="folder_name" id="folder_name" class="form-control" placeholder="Folder Name" required oninput="toggleButton()">
+                </div>
+                <button type="submit" class="btn btn-primary" id="createButton" disabled>Create Folder</button>
+            </form>
+            <a href="{% url 'browse' %}" class="btn btn-secondary mt-3">Cancel</a>
         </div>
-        <button type="submit" class="btn btn-primary">Create Folder</button>
-    </form>
-    
-    <a href="{% url 'browse' %}" class="btn btn-secondary mt-3">Back to Browse</a>
+    </div>
 </div>
+
+<script>
+    function toggleButton() {
+        const inputField = document.getElementById('folder_name');
+        const createButton = document.getElementById('createButton');
+        // Enable the button if the input field has text, otherwise disable it
+        createButton.disabled = inputField.value.trim() === '';
+    }
+</script>
 {% endblock %}
