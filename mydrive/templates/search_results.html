@@ -1,0 +1,20 @@
+{% extends "base_nav.html" %}
+{% include "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">Search Results for: "{{ query }}"</h2> <!-- Centered label -->
+
+    {% if results %}
+        <ul class="list-group">
+            {% for file in results %}
+                <li class="list-group-item">
+                    <a href="{{ file.file.url }}">{{ file.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
+</div>
+{% endblock %}

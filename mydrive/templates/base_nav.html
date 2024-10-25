@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">    
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>{% block title %}My Cloud Drive{% endblock %}</title>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+<body>   
+    <nav class="navbar navbar-expand-lg navbar-light bg-light ">
         <a class="navbar-brand" href="{% url 'home' %}">
             <i class="fab fa-google-drive" style="color: #4285F4;"></i> My Cloud Drive
         </a>
@@ -19,25 +17,16 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'upload_file' %}">Upload</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'browse' %}">Browse</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'update_profile' %}">Profile</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'manage_files' %}">Manage Files</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-                </li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'upload_file' %}">Upload</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'browse' %}">Browse</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'update_profile' %}">Profile</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'manage_files' %}">Manage Files</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
             </ul>
         </div>
     </nav>
 
+    <div class="row">
     <div class="sidebar bg-light col-2">
         <ul class="nav flex-column">
             <li class="nav-item">
@@ -46,49 +35,40 @@
                         <span style="color:black;"><i class="fas fa-plus"></i> New</span>
                     </button>
                 </a>
-                <div class="collapse" id="newDropdown">
-                    <ul class="list-unstyled">
-                        <li style="cursor: pointer;"> 
-                            <a class="dropdown-item" href="{% url 'create_folder' %}">New Folder</a>
-                        </li>
-                        <li style="cursor: pointer;"> 
-                            <a class="dropdown-item" id="fileUploadBtn">File Upload</a>
-                        </li>
-                        <li style="cursor: pointer;"> 
-                            <a class="dropdown-item" id="folderUploadBtn">Folder Upload</a>
-                        </li>
+                <div class="collapse position-absolute" id="newDropdown" style="z-index: 1000;">
+                    <ul class="list-unstyled bg-white border rounded p-2">
+                        <li style="cursor: pointer;"><a class="dropdown-item" href="{% url 'create_folder' %}">New Folder</a></li>
+                        <li style="cursor: pointer;"><a class="dropdown-item" id="fileUploadBtn">File Upload</a></li>
+                        <li style="cursor: pointer;"><a class="dropdown-item" id="folderUploadBtn">Folder Upload</a></li>
                     </ul>
                 </div>
-                
+                <a class="nav-link" href="{% url 'home' %}">
+                    <button style="border-radius: 0.8rem; text-align:left; background-color: rgba(173, 216, 230, 0.2); width:110%;">
+                        <span style="color:black;"><i class="fas fa-home"></i> Home</span>
+                    </button>
+                </a>
             </li>
         </ul>
     </div>
 
-    <div class="content">
-        <div class="container mt-4">
-            {% block content %}
-            {% endblock %}
-        </div>
-    </div>
-
-    <!-- Hidden input elements for file and folder uploads -->
+    {% block content %}
+        {% comment %} Here will be displayed other templates in this program {% endcomment %}
+    {% endblock %} 
+</body>
     <input type="file" id="file" style="display:none;" onchange="this.form.submit()">
     <input type="file" id="folder" webkitdirectory directory style="display:none;" onchange="this.form.submit()">
 
-    <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
-        // Add event listeners to buttons
         document.getElementById('fileUploadBtn').addEventListener('click', function() {
-            document.getElementById('file').click(); // Trigger file upload
+            document.getElementById('file').click();
         });
 
         document.getElementById('folderUploadBtn').addEventListener('click', function() {
-            document.getElementById('folder').click(); // Trigger folder upload
+            document.getElementById('folder').click();
         });
     </script>
-</body>
 </html>

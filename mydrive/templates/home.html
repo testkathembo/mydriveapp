@@ -1,9 +1,54 @@
+
 {% extends "base_nav.html" %}
-{% include "base.html" %}
 
-<body>
-    
-    
-</body>
-
-
+{% block content %}
+<div class="content col-10">
+    <div class="container mt-4 text-center">
+        <h3>Welcome <span style="color:blue;">{{ name }}</span> to Drive</h3>
+    </div>
+    <div class="container mt-4 text-center">
+        <form method="GET" action="{% url 'search_drive' %}" style="width: 60%; margin: auto;">
+            <div class="input-group">
+                <input class="form-control" type="search" placeholder="Search in Drive" aria-label="Search" name="q" style="border-radius: 25px; border: 1px solid #007bff;">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-success" type="submit" style="border-radius: 25px;">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="container mt-4">
+        <h2 class="mb-4">My Drive</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Owner</th>
+                    <th scope="col">Last Modified</th>
+                    <th scope="col">File Size</th>
+                    <th scope="col">Original Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in files %}
+                    <tr>
+                        <td>
+                            <i class="fas {% if file.type == 'folder' %}fa-folder{% else %}fa-file-pdf{% endif %}"></i>
+                            <a href="{{ file.url }}">{{ file.name }}</a>
+                        </td>
+                        <td>{{ file.owner }}</td>
+                        <td>{{ file.modified_time }}</td>
+                        <td>{{ file.size }} KB</td>
+                        <td>{{ file.location }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No files found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

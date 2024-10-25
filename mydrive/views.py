@@ -52,7 +52,9 @@ def login_view(request):
 @login_required
 def home_view(request):
     """Renders the home page for logged-in users."""
-    return render(request, 'home.html')
+    return render(request, 'home.html', {
+        'name': request.user.username  # Pass the logged-in username
+    })
 
 def logout_view(request):
     """Logs out the user and redirects to the login page."""
@@ -358,3 +360,15 @@ def upload_folder(request):
         form = FolderUploadForm()
 
     return render(request, 'upload_folder.html', {'form': form})
+
+@login_required
+def search_drive(request):
+    query = request.GET.get('q', '')
+    results = []  # This should be replaced with your actual search logic
+
+    if query:
+        # Implement your search logic here
+        results = UploadedFile.objects.filter(name__icontains=query)  # Example of searching by file name
+
+    return render(request, 'search_results.html', {'query': query, 'results': results})
+

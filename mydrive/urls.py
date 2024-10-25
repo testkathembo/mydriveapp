@@ -18,7 +18,8 @@ from .views import (
     delete_file,
     delete_folder,
     share_file,
-    share_folder
+    share_folder,
+    search_drive
     
     )
 
@@ -50,8 +51,9 @@ urlpatterns = [
     path('delete-file/<int:file_id>/', delete_file, name='delete_file'),
     path('delete-folder/<int:folder_id>/', delete_folder, name='delete_folder'),  # New delete folder path
     
-    # Share files and folders
+    # Share and search files and folders
     path('share-file/<int:file_id>/', share_file, name='share_file'),  # URL for sharing files
+    path('search/', search_drive, name='search_drive'), 
 ] 
 
 if settings.DEBUG:
