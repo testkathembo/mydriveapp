@@ -17,58 +17,54 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><a class="nav-link" href="{% url 'upload_file' %}">Upload</a></li>
+                {% comment %} <li class="nav-item"><a class="nav-link" href="{% url 'upload_file' %}">Upload</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'browse' %}">Browse</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'update_profile' %}">Profile</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'manage_files' %}">Manage Files</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li> {% endcomment %}
             </ul>
         </div>
     </nav>
 
     <div class="row">
-    <div class="sidebar bg-light col-2">
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link" href="#" id="newButton" role="button" data-toggle="collapse" data-target="#newDropdown" aria-expanded="false" aria-controls="newDropdown">
-                    <button class="btn btn-primary bg-light">
-                        <span style="color:black;"><i class="fas fa-plus"></i> New</span>
-                    </button>
-                </a>
-                <div class="collapse position-absolute" id="newDropdown" style="z-index: 1000;">
-                    <ul class="list-unstyled bg-white border rounded p-2">
-                        <li style="cursor: pointer;"><a class="dropdown-item" href="{% url 'create_folder' %}">New Folder</a></li>
-                        <li style="cursor: pointer;"><a class="dropdown-item" id="fileUploadBtn">File Upload</a></li>
-                        <li style="cursor: pointer;"><a class="dropdown-item" id="folderUploadBtn">Folder Upload</a></li>
-                    </ul>
-                </div>
-                <a class="nav-link" href="{% url 'home' %}">
-                    <button style="border-radius: 0.8rem; text-align:left; background-color: rgba(173, 216, 230, 0.2); width:110%;">
-                        <span style="color:black;"><i class="fas fa-home"></i> Home</span>
-                    </button>
-                </a>
-            </li>
-        </ul>
-    </div>
+        <div class="sidebar bg-light col-2">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="newButton" role="button" data-toggle="collapse" data-target="#newDropdown" aria-expanded="false" aria-controls="newDropdown">
+                        <button class="btn btn-primary bg-light">
+                            <span style="color:black;"><i class="fas fa-plus"></i> New</span>
+                        </button>
+                    </a>
+                    <div class="collapse position-absolute" id="newDropdown" style="z-index: 1000;">
+                        <ul class="list-unstyled bg-white border rounded p-2">
+                            {% comment %} <li style="cursor: pointer;"><a class="dropdown-item" href="{% url 'create_folder' %}">New Folder</a></li> {% endcomment %}
+                            <li style="cursor: pointer;">
+                                <form method="post" action="{% url 'upload_file' %}" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <input type="file" name="file">
+                                    <button type="submit">Upload</button>
+                                </form>
+                                
+                            </li>
+                            <li style="cursor: pointer;"><a class="dropdown-item" id="folderUploadBtn">Folder Upload</a></li>
+                        </ul>
+                    </div>
+                    <a class="nav-link" href="{% url 'home' %}">
+                        <button style="border-radius: 0.8rem; text-align:left; background-color: rgba(173, 216, 230, 0.2); width:110%;">
+                            <span style="color:black;"><i class="fas fa-home"></i> Home</span>
+                        </button>
+                    </a>
+                </li>
+            </ul>
+        </div>
 
-    {% block content %}
-        {% comment %} Here will be displayed other templates in this program {% endcomment %}
-    {% endblock %} 
-</body>
-    <input type="file" id="file" style="display:none;" onchange="this.form.submit()">
-    <input type="file" id="folder" webkitdirectory directory style="display:none;" onchange="this.form.submit()">
+        {% block content %}
+            <!-- Content from other templates will be displayed here -->
+        {% endblock %} 
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-    <script>
-        document.getElementById('fileUploadBtn').addEventListener('click', function() {
-            document.getElementById('file').click();
-        });
-
-        document.getElementById('folderUploadBtn').addEventListener('click', function() {
-            document.getElementById('folder').click();
-        });
-    </script>
+</body>
 </html>

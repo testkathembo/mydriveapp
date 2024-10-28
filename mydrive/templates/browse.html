@@ -1,60 +1,31 @@
 {% extends "base_nav.html" %}
-{% include "base.html" %}
 
 {% block content %}
-
 <div class="container">
-    <h2 class="text-center">Welcome, {{ request.user.get_full_name }}!</h2>  
-
-       <div class="row">
-             {% for folder in folders %}
-             <div class="col-md-4 mb-3">
-                <div class="card">
-                <div class="folder">
-                    <h3>{{ folder.name }}</h3>
-                    <a href="{% url 'browse_folder' folder.id %}" class="btn btn-primary">Open</a>
-                    <a href="{% url 'delete_folder' folder.id %}" class="btn btn-danger">Delete</a>
-                </div>
-            </div>
-        </div>
+    <h2>Uploaded Files</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Last Modified</th>
+                <th>File Size</th>
+                <th>Original Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in uploaded_files %}
+            <tr>
+                <td>{{ file.name }}</td>
+                <td>{{ file.last_modified }}</td>
+                <td>{{ file.file_size }} bytes</td>
+                <td>{{ file.original_location }}</td>
+            </tr>
             {% empty %}
-                <p>No folders available.</p>
+            <tr>
+                <td colspan="4">No files uploaded.</td>
+            </tr>
             {% endfor %}
-    </div>
-        
-
-    <h5>Your Uploaded Files</h5>
-    <div class="row">
-        {% for file in uploaded_files %}
-            <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ file.file.name }}</h5>
-                        <p class="card-text">Uploaded on: {{ file.uploaded_at }}</p>
-                        <a href="{{ file.file.url }}" class="btn btn-secondary">Download File</a>
-                        <a href="{% url 'move_file' file.id %}" class="btn btn-warning">Move</a>
-                        <a href="{% url 'copy_file' file.id %}" class="btn btn-info">Copy</a>
-                        <a href="{% url 'delete_file' file.id %}" class="btn btn-danger">Delete</a> 
-                        <a href="{% url 'share_file' file.id %}" class="btn btn-info">Share</a>
-
-                    </div>
-                </div>
-            </div>
-        {% empty %}
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">No files uploaded yet.</h5>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-    
-
-    <div class="text-center">
-        <a href="{% url 'upload_file' %}" class="btn btn-primary">Upload a new file</a>
-    </div>
+        </tbody>
+    </table>
 </div>
-
 {% endblock %}
