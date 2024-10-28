@@ -52,13 +52,15 @@ from .models import UploadedFile
 class FileUploadForm(forms.ModelForm):
     class Meta:
         model = UploadedFile
-        fields = ['file', 'name', 'original_location']  # Ensure only editable fields are included here
+        fields = ['file', 'name', 'original_location']  # Do not include auto-managed fields
+        widgets = {
+            'original_location': forms.TextInput(attrs={'placeholder': 'Enter file original location'}),
+        }
 
     def save(self, commit=True):
         file_instance = super().save(commit=False)
-        # Additional processing can be done here if necessary
         if commit:
-            file_instance.save()
+            file_instance.save()  # Save method handles file_size and last_modified automatically
         return file_instance
 
 

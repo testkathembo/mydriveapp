@@ -47,8 +47,10 @@ def logout_view(request):
 
 
 def home_view(request):
-    files = UploadedFile.objects.filter(owner=request.user)  # Example usage
+    # Fetch all files for the current user or all files if admin
+    files = UploadedFile.objects.all() if request.user.is_superuser else UploadedFile.objects.filter(owner=request.user)
     return render(request, 'home.html', {'files': files})
+
 
 
 @login_required
@@ -56,14 +58,12 @@ def upload_file_view(request):
     if request.method == 'POST':
         form = FileUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            uploaded_file = form.save(commit=False)
-            uploaded_file.owner = request.user  # Set the owner to the current user
-            uploaded_file.original_location = uploaded_file.file.name  # Example of setting original location
-            uploaded_file.save()
-            return redirect('home')  # Redirect to a success page
-        else:
-            return render(request, 'upload_form.html', {'form': form})
+            file_instance = form.save(commit=False)
+            file_instance.owner = request.user  # Set the owner to the current user
+            file_instance.save()
+            return redirect('home')  # Redirect to the home page or wherever suitable
     else:
         form = FileUploadForm()
-        return render(request, 'upload_form.html', {'form': form})
+    return render(request, 'upload_file.html', {'form': form})
+
 

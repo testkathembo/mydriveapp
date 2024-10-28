@@ -1,49 +1,32 @@
 {% extends "base_nav.html" %}
-{% load static %}
 
 {% block content %}
-<div class="content col-10">
-    <div class="container mt-4 text-center">
-        <h3>Welcome <span style="color:blue;">{{ user.username }}</span> to Drive</h3>
-    </div>
-    <div class="container mt-4">
-        <!-- File Upload Form -->
-        <form method="post" enctype="multipart/form-data" action="{% url 'upload_file' %}">
-            {% csrf_token %}
-            <div class="input-group mb-3">
-                <input type="file" name="file" class="form-control" id="fileInput" aria-describedby="fileInputAddon">
-                <button class="btn btn-outline-secondary" type="submit" >Upload</button>
-            </div>
-        </form>
-    </div>
-    <div class="container mt-4">
-        <h2 class="mb-4">My Drive</h2>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Owner</th>
-                    <th scope="col">Last Modified</th>
-                    <th scope="col">File Size</th>
-                    <th scope="col">Original Location</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for file in files %}
-                    <tr>
-                        <td>{{ file.name }}</td>
-                        <td>{{ file.owner.username }}</td>
-                        <td>{{ file.last_modified|date:"Y-m-d H:i" }}</td>
-                        <td>{{ file.file_size }}</td>
-                        <td>{{ file.original_location }}</td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center">No files found.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+<div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Reason Suggested</th>
+                <th>Owner</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in files %}
+            <tr>
+                <td>
+                    <a href="{{ file.file.url }}">{{ file.name }}</a>
+                </td>
+                <td>You opened • {{ file.last_modified|date:"M d, Y" }}</td>
+                <td>{{ file.owner.username }}</td>
+                <td>My Drive</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No files found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}
