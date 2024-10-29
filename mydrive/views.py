@@ -64,6 +64,17 @@ def home_view(request):
     }
     return render(request, 'home.html', context)
 
+@login_required
+# Assuming you're trying to search for files by user input and filter by owner
+def search_drive(request):
+    query = request.GET.get('q', '')
+    if query:
+        files = UploadedFile.objects.filter(name__icontains=query, owner=request.user)
+    else:
+        files = UploadedFile.objects.all()
+    return render(request, 'search_results.html', {'files': files})
+
+
 
 
 @login_required

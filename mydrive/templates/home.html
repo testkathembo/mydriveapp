@@ -3,7 +3,20 @@
 
 {% block content %}
 <div class="container">
-    <h2>My Drive</h2>
+    <div class="container mt-4 text-center">
+        <h3>Welcome <span style="color:blue;">{{ name }}</span> to Drive</h3>
+    </div>
+    <div class="container mt-4 text-center">
+        <form method="GET" action="{% url 'search_drive' %}" style="width:60%; margin-left:23%;">
+            <div class="input-group">
+                <input type="text" name="q" value="{{ search_form.q.value }}" class="form-control" placeholder="Search in Drive" aria-label="Search" style="border-radius: 25px; border: 1px solid #007bff;">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-success" type="submit" style="border-radius: 25px;">Search</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <h2>Suggested Files</h2>
     <table class="table">
         <thead>
             <tr>
@@ -21,12 +34,25 @@
                 <td>{{ file.owner.username }}</td>
                 <td>{{ file.last_modified|date:"M d, Y H:i" }}</td>
                 <td>{{ file.file_size }}</td>
-                <td>
-
-                    
-                    <a href="{% url 'download' file.id %}">Download</a> |
-                    <a href="{% url 'rename' file.id %}">Rename</a> |
-                    <a href="{% url 'delete' file.id %}" onclick="return confirm('Are you sure you want to delete this file?');">Move to trash</a>
+                <td>                   
+                    <a class="nav-link" href="#" id="popButton{{ file.id }}" role="button" data-toggle="collapse" data-target="#popDropdown{{ file.id }}" aria-expanded="false" aria-controls="popDropdown{{ file.id }}">
+                        <span style="color:black;">...</span>                       
+                    </a>
+                    <div class="collapse position-absolute card" id="popDropdown{{ file.id }}" style="z-index: 1000; width: 200px;">
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li style="cursor: pointer;">
+                                    <a class="dropdown-item" href="{% url 'download' file.id %}">Download </a>
+                                </li>                            
+                                <li style="cursor: pointer;">
+                                    <a class="dropdown-item" href="{% url 'rename' file.id %}">Rename </a>
+                                </li>                            
+                                <li style="cursor: pointer;">
+                                    <a class="dropdown-item" href="{% url 'delete' file.id %}" onclick="return confirm('Are you sure you want to delete this file?');">Trash</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </td>
             </tr>
             {% empty %}

@@ -7,6 +7,7 @@ urlpatterns = [
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     path('home/', home_view, name='home'),  # Correct path for the home view
+    path('search/', views.search_drive, name='search_drive'),
     path('upload/', upload_file_view, name='upload_file'),
     path('download/<int:file_id>/', views.download_file, name='download'),
     path('rename/<int:file_id>/', views.rename_file, name='rename'),
