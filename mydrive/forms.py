@@ -45,25 +45,22 @@ class UserLoginForm(AuthenticationForm):
     username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'autofocus': True}))
     password = forms.CharField(label="Password", widget=forms.PasswordInput)
 
-
-from django import forms
-from .models import UploadedFile
-
+    
 class FileUploadForm(forms.ModelForm):
     class Meta:
         model = UploadedFile
-        fields = ['file', 'name', 'original_location']  # Do not include auto-managed fields
-        widgets = {
-            'original_location': forms.TextInput(attrs={'placeholder': 'Enter file original location'}),
-        }
+        fields = ['file', 'name', 'original_location']  # `original_location` can be optional depending on your design
 
     def save(self, commit=True):
-        file_instance = super().save(commit=False)
+        instance = super().save(commit=False)
         if commit:
-            file_instance.save()  # Save method handles file_size and last_modified automatically
-        return file_instance
+            instance.save()
+        return instance
+    
 
-
-
+class FileRenameForm(forms.ModelForm):
+    class Meta:
+        model = UploadedFile
+        fields = ['name']  # Assuming 'name' is the field you want to change
 
 

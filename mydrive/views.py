@@ -5,6 +5,11 @@ from django.contrib.auth.decorators import login_required
 from .forms import (UserRegistrationForm, UserLoginForm, FileUploadForm,)
 from django.contrib.auth.models import User
 from .models import UploadedFile  # Make sure this import is added
+from django.http import HttpResponse
+from .forms import FileRenameForm  # Ensure you have a form for renaming
+from django.http import FileResponse
+
+
 
 def register(request):
     """Handles user registration."""
@@ -46,10 +51,18 @@ def logout_view(request):
     return redirect('login')
 
 
+@login_required
 def home_view(request):
     # Fetch all files for the current user or all files if admin
     files = UploadedFile.objects.all() if request.user.is_superuser else UploadedFile.objects.filter(owner=request.user)
-    return render(request, 'home.html', {'files': files})
+    # Prepare the full name of the user
+    full_name = f"{request.user.first_name} {request.user.last_name}"
+    # Pass it along with other context data to the template
+    context = {
+        'files': files,
+        'name': full_name  # Passing user's full name to the template
+    }
+    return render(request, 'home.html', context)
 
 
 
@@ -59,11 +72,47 @@ def upload_file_view(request):
         form = FileUploadForm(request.POST, request.FILES)
         if form.is_valid():
             file_instance = form.save(commit=False)
-            file_instance.owner = request.user  # Set the owner to the current user
+            if not file_instance.name:  # Ensure name is set
+                file_instance.name = file_instance.file.name
+            file_instance.owner = request.user  # Setting the owner
             file_instance.save()
-            return redirect('home')  # Redirect to the home page or wherever suitable
+            messages.success(request, 'File uploaded successfully!')
+            return redirect('home')
+        else:
+            messages.error(request, 'Upload failed. Please check the form.')
     else:
         form = FileUploadForm()
     return render(request, 'upload_file.html', {'form': form})
+
+def rename_file(request, file_id):
+    file = get_object_or_404(UploadedFile, pk=file_id)
+    if request.method == 'POST':
+        new_name = request.POST.get('new_name', '')
+        if new_name:
+            file.name = new_name
+            file.save()
+            messages.success(request, "File renamed successfully.")
+        return redirect('home')
+    else:
+        return render(request, 'rename_file.html', {'file': file})
+
+
+def delete_file(request, file_id):
+    file = get_object_or_404(UploadedFile, pk=file_id)
+    file.delete()
+    messages.success(request, "File deleted successfully.")
+    return redirect('home')
+
+
+    
+
+def download_file(request, file_id):
+    # Retrieve the file instance
+    file_instance = get_object_or_404(UploadedFile, pk=file_id)
+    
+    # Serve the file
+    response = FileResponse(file_instance.file.open(), as_attachment=True, filename=file_instance.name)
+    
+    return response
 
 
